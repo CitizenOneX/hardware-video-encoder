@@ -3,7 +3,7 @@
 This library wraps hardware video encoding and scaling in a simple interface.
 There are no performance loses (at the cost of library flexibility).
 
-Currently it supports VAAPI and various codecs (H.264, HEVC, ...).\
+Currently it supports NVENC and various codecs (H.264, HEVC, ...).\
 VBR and CQP modes are supported (e.g. streaming and later editting).
 
 See library [documentation](https://bmegli.github.io/hardware-video-encoder/group__interface.html).
@@ -24,22 +24,20 @@ Complex pipelines (muxing, filtering) are beyond the scope of this library.
 
 ## Platforms 
 
-Unix-like operating systems (e.g. Linux).
-Tested on Ubuntu 18.04.
+Tested on Windows 10, NVIDIA 3060Ti, nvenc codecs built into ffmpeg
 
 ## Hardware
 
-Intel VAAPI compatible hardware encoders ([Quick Sync Video](https://ark.intel.com/Search/FeatureFilter?productType=processors&QuickSyncVideo=true))
+NVENC compatible hardware encoders
 
 ## Dependencies
 
 Library depends on:
 - FFmpeg `avcodec`, `avutil`, `avfilter` (at least 3.4 version)
 
-Works with system FFmpeg on Ubuntu 18.04 and doesn't on 16.04 (outdated FFmpeg and VAAPI ecosystem).
-
 ## Building Instructions
 
+Not updated for Windows...
 Tested on Ubuntu 18.04.
 
 ``` bash
