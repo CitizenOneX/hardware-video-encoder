@@ -14,14 +14,14 @@
 
 #include "../hve.h"
 
-const int WIDTH=1280;
-const int HEIGHT=720;
-const int INPUT_WIDTH=1280; //optional scaling if different from width
-const int INPUT_HEIGHT=720; //optional scaling if different from height
+#define WIDTH 1280
+#define HEIGHT 720
+#define INPUT_WIDTH 1280 //optional scaling if different from width
+#define INPUT_HEIGHT 720 //optional scaling if different from height
 const int FRAMERATE=30;
 int SECONDS=10;
 const char *DEVICE=NULL; //NULL for default or device e.g. "/dev/dri/renderD128"
-const char *ENCODER="hevc_vaapi";//NULL for default (h264_vaapi) or FFmpeg encoder e.g. "hevc_vaapi", ...
+const char *ENCODER="hevc_nvenc";//NULL for default (h264_vaapi) or FFmpeg encoder e.g. "hevc_vaapi", ...
 const char *PIXEL_FORMAT="p010le"; //NULL for default (nv12) or pixel format e.g. "rgb0", ...
 const int PROFILE=FF_PROFILE_HEVC_MAIN_10; //or FF_PROFILE_HEVC_MAIN, ...
 const int BFRAMES=0; //max_b_frames, set to 0 to minimize latency, non-zero to minimize size
