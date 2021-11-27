@@ -72,8 +72,8 @@ struct hve *hve_init(const struct hve_config *config)
 	//specified device or NULL / empty string for default
 	const char *device = (config->device != NULL && config->device[0] != '\0') ? config->device : NULL;
 
-	if( (err = av_hwdevice_ctx_create(&h->hw_device_ctx, AV_HWDEVICE_TYPE_VAAPI, device, NULL, 0) ) < 0)
-		return hve_close_and_return_null(h, "failed to create VAAPI device");
+	if( (err = av_hwdevice_ctx_create(&h->hw_device_ctx, AV_HWDEVICE_TYPE_CUDA, device, NULL, 0) ) < 0)
+		return hve_close_and_return_null(h, "failed to create CUDA device");
 
 	const char *encoder = (config->encoder != NULL && config->encoder[0] != '\0') ? config->encoder : "h264_vaapi";
 
@@ -92,7 +92,7 @@ struct hve *hve_init(const struct hve_config *config)
 	h->avctx->time_base = (AVRational){ 1, config->framerate };
 	h->avctx->framerate = (AVRational){ config->framerate, 1 };
 	h->avctx->sample_aspect_ratio = (AVRational){ 1, 1 };
-	h->avctx->pix_fmt = AV_PIX_FMT_VAAPI;
+	h->avctx->pix_fmt = AV_PIX_FMT_CUDA;
 
 	if(config->profile)
 		h->avctx->profile = config->profile;
@@ -194,10 +194,10 @@ static int init_hwframes_context(struct hve* h, const struct hve_config *config)
 	int err = 0, depth;
 
 	if(!(hw_frames_ref = av_hwframe_ctx_alloc(h->hw_device_ctx)))
-		return HVE_ERROR_MSG("failed to create VAAPI frame context");
+		return HVE_ERROR_MSG("failed to create frame context");
 
 	frames_ctx = (AVHWFramesContext*)(hw_frames_ref->data);
-	frames_ctx->format = AV_PIX_FMT_VAAPI;
+	frames_ctx->format = AV_PIX_FMT_CUDA;
 
 	frames_ctx->width = config->input_width ? config->input_width : config->width;
 	frames_ctx->height = config->input_height ? config->input_height : config->height;
@@ -223,7 +223,7 @@ static int init_hwframes_context(struct hve* h, const struct hve_config *config)
 
 	if((err = av_hwframe_ctx_init(hw_frames_ref)) < 0)
 	{
-		fprintf(stderr, "hve: failed to initialize VAAPI frame context - \"%s\"\n", av_err2str(err));
+		fprintf(stderr, "hve: failed to initialize frame context - \"%s\"\n", av_err2str(err));
 		av_buffer_unref(&hw_frames_ref);
 		return HVE_ERROR_MSG("hint - make sure you are using supported pixel format");
 	}
@@ -259,7 +259,7 @@ static int init_hardware_scaling(struct hve *h, const struct hve_config *config)
 
 	//prepare filter source
 	snprintf(temp_str, sizeof(temp_str), "video_size=%dx%d:pix_fmt=%d:time_base=1/%d:pixel_aspect=1/1",
-		config->input_width, config->input_height, AV_PIX_FMT_VAAPI, config->framerate);
+		config->input_width, config->input_height, AV_PIX_FMT_CUDA, config->framerate);
 
 	if(avfilter_graph_create_filter(&h->buffersrc_ctx, buffersrc, "in", temp_str, NULL, h->filter_graph) < 0)
 		return HVE_ERROR_MSG_FILTER(ins, outs, "cannot create buffer source");
@@ -292,7 +292,7 @@ static int init_hardware_scaling(struct hve *h, const struct hve_config *config)
 	ins->next       = NULL;
 
 	//the actual description of the graph
-	snprintf(temp_str, sizeof(temp_str), "format=vaapi,scale_vaapi=w=%d:h=%d", config->width, config->height);
+	snprintf(temp_str, sizeof(temp_str), "format=cuda,scale_cuda=w=%d:h=%d", config->width, config->height);
 
 	if(avfilter_graph_parse_ptr(h->filter_graph, temp_str, &ins, &outs, NULL) < 0)
 		return HVE_ERROR_MSG_FILTER(ins, outs, "failed to parse filter graph description");

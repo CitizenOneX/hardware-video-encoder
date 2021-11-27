@@ -14,15 +14,15 @@
 
 #include "../hve.h"
 
-const int WIDTH=1280;
-const int HEIGHT=720;
-const int INPUT_WIDTH=1280; //optional hardware scaling if different from width
-const int INPUT_HEIGHT=720; //optional hardware scaling if different from height
+#define WIDTH 1280
+#define HEIGHT 720
+#define INPUT_WIDTH 1280  //optional hardware scaling if different from width
+#define INPUT_HEIGHT 720 //optional hardware scaling if different from height
 const int FRAMERATE=30;
 int SECONDS=10;
 const char *DEVICE=NULL; //NULL for default or device e.g. "/dev/dri/renderD128"
-const char *ENCODER=NULL;//NULL for default (h264_vaapi) or FFmpeg encoder e.g. "hevc_vaapi", ...
-const char *PIXEL_FORMAT="nv12"; //NULL for default (NV12) or pixel format e.g. "rgb0"
+const char* ENCODER = "h264_nvenc";//NULL for default (h264_vaapi) or FFmpeg encoder e.g. "hevc_vaapi", ...
+const char *PIXEL_FORMAT="nv12"; //sw_pix_fmt for upload: NULL for default (NV12) or pixel format e.g. "rgb0"
 const int PROFILE=FF_PROFILE_H264_HIGH; //or FF_PROFILE_HEVC_MAIN, FF_PROFILE_H264_CONSTRAINED_BASELINE, ...
 const int BFRAMES=0; //max_b_frames, set to 0 to minimize latency, non-zero to minimize size
 const int BITRATE=0; //average bitrate in VBR mode (bit_rate != 0 and qp == 0)
@@ -138,8 +138,14 @@ int process_user_input(int argc, char* argv[])
 		return -1;
 	}
 
+	// required 1st arg - seconds
 	SECONDS = atoi(argv[1]);
-	DEVICE=argv[2]; //NULL as last argv argument, or device path
+
+	// optional 2nd arg - device
+	if (argc > 2)
+	{
+		DEVICE = argv[2]; //NULL as last argv argument, or device path
+	}
 
 	return 0;
 }
