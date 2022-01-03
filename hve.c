@@ -213,7 +213,7 @@ static int init_hwframes_context(struct hve* h, const struct hve_config *config)
 	// See:
 	// https://github.com/bmegli/hardware-video-encoder/issues/26
 
-	frames_ctx->sw_format = AV_PIX_FMT_NV12;
+	frames_ctx->sw_format = AV_PIX_FMT_RGB0;
 
 	if(hve_pixel_format_depth(h->sw_pix_fmt, &depth) != HVE_OK)
 		return HVE_ERROR_MSG("failed to get pixel format depth");
