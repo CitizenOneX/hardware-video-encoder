@@ -213,7 +213,9 @@ static int init_hwframes_context(struct hve* h, const struct hve_config *config)
 	// See:
 	// https://github.com/bmegli/hardware-video-encoder/issues/26
 
-	frames_ctx->sw_format = AV_PIX_FMT_RGB0;
+	//frames_ctx->sw_format = AV_PIX_FMT_RGB0; // for realsense color (RGB0) input
+	//frames_ctx->sw_format = AV_PIX_FMT_NV12; // for realsense IR (Y8) input, with dummy UV plane
+	frames_ctx->sw_format = h->sw_pix_fmt; // will this just copy either RGB0 or NV12 as per what the user asked for? but that's a sw upload format, not a hardware format...?
 
 	if(hve_pixel_format_depth(h->sw_pix_fmt, &depth) != HVE_OK)
 		return HVE_ERROR_MSG("failed to get pixel format depth");
